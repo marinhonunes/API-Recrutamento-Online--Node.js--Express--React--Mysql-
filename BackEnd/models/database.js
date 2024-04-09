@@ -8,16 +8,19 @@ class Database {
             password: process.env.PASSWORD_DB,
             database: process.env.DATA_BASE
         })
+
     }
 
-    async executaComando(sql, params = []) {
+    async executaComando() {
         const connection = await this.pool.getConnection()
+
         try {
             const [rows] = await connection.execute(sql, params)
             return rows
         } finally {
             connection.release()
         }
+
     }
 
 
@@ -31,5 +34,6 @@ class Database {
         }
     }
 }
+
 
 module.exports = Database
