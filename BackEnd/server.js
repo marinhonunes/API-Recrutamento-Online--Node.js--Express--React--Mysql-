@@ -1,9 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import candidatoRoutes from './routes/candidatoRoutes.js';
+
 const app = express();
 const porta = 3001;
-
 
 app.use(express.json());
 
@@ -11,8 +12,8 @@ app.use(cors({origin: "http://localhost:3000", credentials: true}));
 
 dotenv.config();
 
-// const candidatoRoutes = require('./routes/candidatoRoutes');
-// app.use('/candidato', candidatoRoutes);
+
+app.use('/candidato', candidatoRoutes);
 
 // const vagaRoutes = require('./routes/vagaRoutes');
 // app.use('/vaga', vagaRoutes);
