@@ -9,7 +9,7 @@ export default function FormCandidatar(props) {
   const [listaCandidatos, setListaCandidatos] = useState([]);
   const [candidatoSelecionado, setCandidatoSelecionado] = useState({});
   const [vagaSelecionada, setVagaSelecionada] = useState({});
-  
+
   const [ordem, setOrdem] = useState({
     id: 0,
     dataOrdem: "",
@@ -44,38 +44,42 @@ export default function FormCandidatar(props) {
 
   function gravar() {
     //descrever o formato esperado pelo backend do candidato
-    const itensInscricao = ordem.itens.map(item => ({
-        candidato: { codigo: item.codigo },
-        descricaoOs: item.descricao,
-        precoUnitario: parseFloat(item.preco)
+    const itensInscricao = ordem.itens.map((item) => ({
+      candidato: { codigo: item.codigo },
+      descricaoOs: item.descricao,
+      precoUnitario: parseFloat(item.preco),
     }));
 
-    const dataOrdemFormatada = new Date(ordem.dataOrdem).toLocaleDateString('en-GB'); // Formatando a data para 'DD/MM/YYYY'
+    const dataOrdemFormatada = new Date(ordem.dataOrdem).toLocaleDateString(
+      "en-GB"
+    ); // Formatando a data para 'DD/MM/YYYY'
 
     const Inscricao = {
-        cliente: candidatoSelecionado ? { codigo: candidatoSelecionado.codigo } : null,
-        dataOrdem: dataOrdemFormatada,
-        total: parseFloat(ordem.total),
-        itensInscricao: itensInscricao
+      cliente: candidatoSelecionado
+        ? { codigo: candidatoSelecionado.codigo }
+        : null,
+      dataOrdem: dataOrdemFormatada,
+      total: parseFloat(ordem.total),
+      itensInscricao: itensInscricao,
     };
 
     // Enviar o objeto para o backend
-    fetch('http://localhost:3001/ordem', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(Inscricao)
+    fetch("http://localhost:3001/ordem", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Inscricao),
     })
-    .then(resposta => resposta.json())
-    .then((dados)=>{
-        if(dados.status){
-            setOrdem({...ordem, id: dados.codigo})
+      .then((resposta) => resposta.json())
+      .then((dados) => {
+        if (dados.status) {
+          setOrdem({ ...ordem, id: dados.codigo });
         }
         alert(dados.mensagem);
-    })
-    .catch(erro => alert(erro.message))
-}
+      })
+      .catch((erro) => alert(erro.message));
+  }
 
   const manipulaSubmissao = (event) => {
     const form = event.currentTarget;
@@ -124,7 +128,7 @@ export default function FormCandidatar(props) {
               campoChave={"cpf"}
               dados={listaCandidatos}
               funcaoSelecao={setCandidatoSelecionado}
-              placeHolder={"Selecione um cliente"}
+              placeHolder={"Selecione um candidato"}
               valor={""}
             />
           </Col>
@@ -142,83 +146,79 @@ export default function FormCandidatar(props) {
         </Row>
         <Row>
           <Col md={12}>
-              <Row>
-                <Col md={1}>
-                  <Form.Group>
-                    <Form.Label>ID:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={vagaSelecionada?.codigo}
-                      disabled
-                    />
-                  </Form.Group>
-                </Col>
-                <Col md={2}>
-                  <Form.Group>
-                    <Form.Label>Cargo:</Form.Label>
-                    <Form.Control type="text" id="cargo"
-                    disabled />
-                  </Form.Group>
-                </Col>
-                <Col md={2}>
-                  <Form.Group>
-                    <Form.Label>Salário R$:</Form.Label>
-                    <Form.Control type="text" id="valorR"
-                    disabled />
-                  </Form.Group>
-                </Col>
-                <Col md={2}>
-                  <Form.Group>
-                    <Form.Label>Cidade:</Form.Label>
-                    <Form.Control type="text" id="cidade"
-                    disabled />
-                  </Form.Group>
-                </Col>
-                <Col md={2}>
-                  <Form.Group>
-                    <Form.Label>Quantidade de Vagas:</Form.Label>
-                    <Form.Control type="text" id="quantidade"
-                    disabled />
-                  </Form.Group>
-                </Col>
-
-                <Col md={1} className="middle">
-                  <Form.Group>
-                    <Form.Label>Adicionar</Form.Label>
-                    <Button
-                      // onClick={() => {
-                      //   setOrdem({
-                      //     ...ordem,
-                      //     itens: [
-                      //       ...ordem.itens,
-                      //       {
-                      //       codigo: vagaSelecionada?.codigo,
-                      //       descricao:
-                      //       document.getElementById("descricaoDoServico").value, 
-                      //       preco: document.getElementById("valorR").value,
-                      //       },
-                      //     ],
-                      //   });
-                      // }}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-bag-plus-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z"
-                        />
-                      </svg>
-                    </Button>
-                  </Form.Group>
-                </Col>
-              </Row>
+            <Row>
+              <Col md={1}>
+                <Form.Group>
+                  <Form.Label>ID:</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={vagaSelecionada?.codigo}
+                    disabled
+                  />
+                </Form.Group>
               </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Cargo:</Form.Label>
+                  <Form.Control type="text" id="cargo" disabled />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Salário R$:</Form.Label>
+                  <Form.Control type="text" id="valorR" disabled />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Cidade:</Form.Label>
+                  <Form.Control type="text" id="cidade" disabled />
+                </Form.Group>
+              </Col>
+              <Col md={2}>
+                <Form.Group>
+                  <Form.Label>Quantidade de Vagas:</Form.Label>
+                  <Form.Control type="text" id="quantidade" disabled />
+                </Form.Group>
+              </Col>
+
+              <Col md={1} className="middle">
+                <Form.Group>
+                  <Form.Label>Adicionar</Form.Label>
+                  <Button
+                  // onClick={() => {
+                  //   setOrdem({
+                  //     ...ordem,
+                  //     itens: [
+                  //       ...ordem.itens,
+                  //       {
+                  //       codigo: vagaSelecionada?.codigo,
+                  //       descricao:
+                  //       document.getElementById("descricaoDoServico").value,
+                  //       preco: document.getElementById("valorR").value,
+                  //       },
+                  //     ],
+                  //   });
+                  // }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-bag-plus-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z"
+                      />
+                    </svg>
+                  </Button>
+                </Form.Group>
+              </Col>
+            </Row>
+          </Col>
         </Row>
         <Row className="mt-3">
           <Col md={12}>
@@ -232,9 +232,10 @@ export default function FormCandidatar(props) {
             />
           </Col>
         </Row>
-        <Button type ="submit" variant="primary">Cadastrar</Button>{' '}
+        <Button type="submit" variant="primary">
+          Cadastrar
+        </Button>{" "}
       </Container>
-      
     </Form>
   );
 }
