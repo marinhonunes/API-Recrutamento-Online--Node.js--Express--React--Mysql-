@@ -1,12 +1,20 @@
 import Candidato from "../models/entidades/candidato.js";
+import Databasee from "../models/conn.js"
+
 
 
 export default class CandidatoDAO {
     async gravar(candidatoo){
-        let conexao = new Database()
+        let conexao = new Databasee()
 
-        let sql = 'INSERT INTO canditatos (cand_cpf, cand_nome, cand_endereco, cand_endereco) VALUES (?,?,?,?)'
-        let params = [candidatoo.cand_cpf,candidatoo.cand_nome,candidatoo.cand_endereco,candidatoo.cand_telefone]
+        let sql = "INSERT INTO canditados (cand_cpf, cand_nome, cand_endereco, cand_telefone) VALUES (?,?,?,?)"
+        let params = [candidatoo.cpf,candidatoo.nome,candidatoo.endereco,candidatoo.telefone]
+
+        //console.log(params)
+        await conexao.executaComando(sql, params)
+
+        return
 
     }
 }
+

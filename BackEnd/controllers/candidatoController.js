@@ -7,10 +7,27 @@ export default class CandidatoCTRL{
         let endereco = req.body.endereco
         let telefone = req.body.telefone
 
+        console.log(cpf)
+
         if(cpf && nome && endereco && telefone){
-            let candidato = new Candidato(nome,cpf,endereco,telefone)
-            await candidato.createCandidato()
+            let candidato = new Candidato(cpf,nome,endereco,telefone)
+                candidato.createCandidato()
+                .then(()=>{
+                    res.status(200).json({
+                        "status": true,
+                        "mensagem": "Candidado cadastrado com sucesso!"
+                    })
+                })
+                .catch((erro) => {
+                    res.status(500).json({
+                        "status": false,
+                        "mensagem": "Erro ao registrar candidato:" + erro.message
+                    })
+                })
+
         }
+
+       
 
     }
 }

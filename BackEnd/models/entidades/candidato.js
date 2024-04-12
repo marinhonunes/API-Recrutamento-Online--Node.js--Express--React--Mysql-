@@ -1,41 +1,20 @@
-import Databasee from '../conn.js'
+
 import CandidatoDAO from '../../persistencia/candidato_dao.js'
 
-const banco = new Databasee();
 
 export default class Candidato{
-    nome;
-    //dataNascimento;
-   // rg;
     cpf;
-    endereço;
-    // numero;
-    // bairro;
-    // cidade;
-    // uf;
-    // cep;
+    nome;
+    endereco;
     telefone;
-    // email;
-    // nomePai;
-    // nomeMae;
-    // estadoCivil;
+   
 
-    constructor(nome, cpf, endereço, telefone){
+    constructor(cpf,nome,endereço, telefone){
         this.nome = nome;
-        // this.dataNascimento = dataNascimento;
-        // this.rg = rg;
         this.cpf = cpf;
-        this.endereço = endereço;
-        // this.numero = numero;
-        // this.bairro = bairro;
-        // this.cidade = cidade;
-        // this.uf = uf;
-        // this.cep = cep;
+        this.endereco = endereço;
         this.telefone = telefone;
-        // this.email = email;
-        // this.nomePai = nomePai;
-        // this.nomeMae = nomeMae;
-        // this.estadoCivil = estadoCivil;
+
     }
 
     // async getAllCandidatos(){
@@ -46,6 +25,7 @@ export default class Candidato{
     async createCandidato(){
         let candidadoDAO = new CandidatoDAO()
         await candidadoDAO.gravar(this)
+        return
     }
 
     // async updateCandidato(cpf, dadosCandidato){
