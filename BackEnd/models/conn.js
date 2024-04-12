@@ -1,6 +1,7 @@
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
-class Database {
+
+export default class Databasee {
     constructor() {
         this.pool = mysql.createPool({
             host: process.env.HOST_DB,
@@ -31,5 +32,3 @@ class Database {
         }
     }
 }
-
-module.exports = Database

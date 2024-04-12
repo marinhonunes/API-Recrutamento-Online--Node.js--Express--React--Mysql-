@@ -1,57 +1,38 @@
-const Database = require('../database');
 
-const banco = new Database();
+import CandidatoDAO from '../../persistencia/candidato_dao.js'
 
-class Candidato{
-    nome;
-    dataNascimento;
-    rg;
+
+export default class Candidato{
     cpf;
-    endereço;
-    numero;
-    bairro;
-    cidade;
-    uf;
-    cep;
+    nome;
+    endereco;
     telefone;
-    email;
-    nomePai;
-    nomeMae;
-    estadoCivil;
+   
 
-    constructor(nome, dataNascimento, rg, cpf, endereço, numero, bairro, cidade, uf, cep, telefone, email, nomePai, nomeMae, estadoCivil){
+    constructor(cpf,nome,endereço, telefone){
         this.nome = nome;
-        this.dataNascimento = dataNascimento;
-        this.rg = rg;
         this.cpf = cpf;
-        this.endereço = endereço;
-        this.numero = numero;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.uf = uf;
-        this.cep = cep;
+        this.endereco = endereço;
         this.telefone = telefone;
-        this.email = email;
-        this.nomePai = nomePai;
-        this.nomeMae = nomeMae;
-        this.estadoCivil = estadoCivil;
+
     }
 
-    async getAllCandidatos(){
-        const candidatos = await banco.executaComando('SELECT * FROM candidato');
-        return candidatos;
+    // async getAllCandidatos(){
+    //     const candidatos = await banco.executaComando('SELECT * FROM candidato');
+    //     return candidatos;
+    // }
+
+    async createCandidato(){
+        let candidadoDAO = new CandidatoDAO()
+        await candidadoDAO.gravar(this)
+        return
     }
 
-    async createCandidato(dadosCandidato){
-        await banco.executaComandoNonQuery('INSERT INTO candidato SET ?', [dadosCandidato]);
-    }
+    // async updateCandidato(cpf, dadosCandidato){
+    //     await banco.executaComandoNonQuery('UPDATE candidato SET ? WHERE cpf = ?', [dadosCandidato, cpf]);
+    // }
 
-    async updateCandidato(cpf, dadosCandidato){
-        await banco.executaComandoNonQuery('UPDATE candidato SET ? WHERE cpf = ?', [dadosCandidato, cpf]);
-    }
-
-    async deleteCandidato(cpf){
-        await banco.executaComandoNonQuery('DELETE FROM candidato WHERE cpf = ?', [cpf]);
-    }
+    // async deleteCandidato(cpf){
+    //     await banco.executaComandoNonQuery('DELETE FROM candidato WHERE cpf = ?', [cpf]);
+    // }
 }
-module.exports = Candidato
