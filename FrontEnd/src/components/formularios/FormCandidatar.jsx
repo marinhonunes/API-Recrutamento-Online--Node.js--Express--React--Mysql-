@@ -10,9 +10,9 @@ export default function FormCandidatar(props) {
   const [candidatoSelecionado, setCandidatoSelecionado] = useState({});
   const [vagaSelecionada, setVagaSelecionada] = useState({});
 
-  const [ordem, setOrdem] = useState({
+  const [inscricao, setinscricao] = useState({
     id: 0,
-    dataOrdem: "",
+    datainscricao: "",
     total: 0,
     cliente: {
       codigo: candidatoSelecionado.codigo,
@@ -21,7 +21,7 @@ export default function FormCandidatar(props) {
   });
 
   useEffect(() => {
-    fetch("http://localhost:3001/candidatos", { method: "GET" })
+    fetch("http://localhost:3001/candidato", { method: "GET" })
       .then((resposta) => {
         return resposta.json();
       })
@@ -36,21 +36,21 @@ export default function FormCandidatar(props) {
   function manipularMudanca(e) {
     const alvo = e.target.name;
     if (e.target.type === "checkbox") {
-      setOrdem({ ...ordem, [alvo]: e.target.checked });
+      setinscricao({ ...inscricao, [alvo]: e.target.checked });
     } else {
-      setOrdem({ ...ordem, [alvo]: e.target.value });
+      setinscricao({ ...inscricao, [alvo]: e.target.value });
     }
   }
 
   function gravar() {
     //descrever o formato esperado pelo backend do candidato
-    const itensInscricao = ordem.itens.map((item) => ({
+    const itensInscricao = inscricao.itens.map((item) => ({
       candidato: { codigo: item.codigo },
       descricaoOs: item.descricao,
       precoUnitario: parseFloat(item.preco),
     }));
 
-    const dataOrdemFormatada = new Date(ordem.dataOrdem).toLocaleDateString(
+    const datainscricaoFormatada = new Date(inscricao.datainscricao).toLocaleDateString(
       "en-GB"
     ); // Formatando a data para 'DD/MM/YYYY'
 
@@ -58,13 +58,13 @@ export default function FormCandidatar(props) {
       cliente: candidatoSelecionado
         ? { codigo: candidatoSelecionado.codigo }
         : null,
-      dataOrdem: dataOrdemFormatada,
-      total: parseFloat(ordem.total),
+      datainscricao: datainscricaoFormatada,
+      total: parseFloat(inscricao.total),
       itensInscricao: itensInscricao,
     };
 
     // Enviar o objeto para o backend
-    fetch("http://localhost:3001/ordem", {
+    fetch("http://localhost:3001/inscricoes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default function FormCandidatar(props) {
       .then((resposta) => resposta.json())
       .then((dados) => {
         if (dados.status) {
-          setOrdem({ ...ordem, id: dados.codigo });
+          setinscricao({ ...inscricao, id: dados.codigo });
         }
         alert(dados.mensagem);
       })
@@ -102,8 +102,8 @@ export default function FormCandidatar(props) {
             <Form.Control
               type="date"
               required
-              name="dataOrdem"
-              value={ordem.dataOrdem}
+              name="datainscricao"
+              value={inscricao.datainscricao}
               onChange={manipularMudanca}
               disabled
             />
@@ -113,8 +113,8 @@ export default function FormCandidatar(props) {
             <Form.Control
               type="time"
               required
-              name="horarioOrdem"
-              value={ordem.horarioOrdem}
+              name="horarioinscricao"
+              value={inscricao.horarioinscricao}
               onChange={manipularMudanca}
               disabled
             />
@@ -137,9 +137,9 @@ export default function FormCandidatar(props) {
           <Col md={12}>
             <Form.Label>Selecione a Vaga:</Form.Label>
             <CaixaSelecao
-              enderecoFonteDados={"http://localhost:3001/vaga"}
+              enderecoFonteDados={"http://localhost:3001/vagas"}
               campoChave={"codigo"}
-              campoExibicao={"nome"}
+              campoExibicao={"cargo"}
               funcaoSelecao={setVagaSelecionada}
             />
           </Col>
@@ -160,25 +160,41 @@ export default function FormCandidatar(props) {
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Cargo:</Form.Label>
-                  <Form.Control type="text" id="cargo" disabled />
+                  <Form.Control 
+                  type="text" 
+                  id="cargo"
+                  value={vagaSelecionada?.cargo}
+                  disabled />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Salário R$:</Form.Label>
-                  <Form.Control type="text" id="valorR" disabled />
+                  <Form.Control 
+                  type="text" 
+                  id="valorR"
+                  value={vagaSelecionada?.salario}
+                  disabled />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Cidade:</Form.Label>
-                  <Form.Control type="text" id="cidade" disabled />
+                  <Form.Control 
+                  type="text" 
+                  id="cidade"
+                  value={vagaSelecionada?.cidade} 
+                  disabled />
                 </Form.Group>
               </Col>
               <Col md={2}>
                 <Form.Group>
                   <Form.Label>Quantidade de Vagas:</Form.Label>
-                  <Form.Control type="text" id="quantidade" disabled />
+                  <Form.Control 
+                  type="text" 
+                  id="quantidade"
+                  value={vagaSelecionada?.quantidadeVagas}
+                  disabled />
                 </Form.Group>
               </Col>
 
@@ -187,10 +203,10 @@ export default function FormCandidatar(props) {
                   <Form.Label>Adicionar</Form.Label>
                   <Button
                   // onClick={() => {
-                  //   setOrdem({
-                  //     ...ordem,
+                  //   setinscricao({
+                  //     ...inscricao,
                   //     itens: [
-                  //       ...ordem.itens,
+                  //       ...inscricao.itens,
                   //       {
                   //       codigo: vagaSelecionada?.codigo,
                   //       descricao:
@@ -226,9 +242,9 @@ export default function FormCandidatar(props) {
               <strong>Vagas Selecionadas</strong>
             </p>
             <TabelaVagas
-              listaItens={ordem.itens}
-              setOrdem={setOrdem}
-              dadosOrdem={ordem}
+              listaItens={inscricao.itens}
+              setinscricao={setinscricao}
+              dadosinscricao={inscricao}
             />
           </Col>
         </Row>
