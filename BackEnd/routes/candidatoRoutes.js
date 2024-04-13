@@ -5,8 +5,9 @@ let candidatoCTRL = new CandidatoCTRL()
 
 let rotaCandidato = express.Router()
 
-rotaCandidato.
-post('/', candidatoCTRL.gravar)
+rotaCandidato
+    .post('/', candidatoCTRL.gravar)
+    .get('/', candidatoCTRL.buscar)
 
 
 export default rotaCandidato
