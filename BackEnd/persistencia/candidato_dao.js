@@ -11,10 +11,29 @@ export default class CandidatoDAO {
         let params = [candidatoo.cpf,candidatoo.nome,candidatoo.endereco,candidatoo.telefone]
 
         //console.log(params)
-        await conexao.executaComando(sql, params)
+       let oi = await conexao.executaComando(sql, params)
 
-        return
+        console.log(oi)
 
     }
+
+
+    async buscar(nome){
+        let buscar = nome
+        let conexao = new Databasee()
+
+        if(!nome){
+            buscar = ''
+        }
+
+        let sql = `SELECT * FROM canditados WHERE cand_nome LIKE ?`
+        let params = ['%' + buscar + '%']
+
+        let lista_candidatos = await conexao.executaComando(sql, params)
+        return lista_candidatos
+
+    }
+
+
 }
 

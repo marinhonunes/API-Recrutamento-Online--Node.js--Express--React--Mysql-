@@ -17,10 +17,11 @@ export default class Candidato{
 
     }
 
-    // async getAllCandidatos(){
-    //     const candidatos = await banco.executaComando('SELECT * FROM candidato');
-    //     return candidatos;
-    // }
+    async getAllCandidatos(nome){
+        let candidadoDAO = new CandidatoDAO()
+       return await candidadoDAO.buscar(nome)
+        
+    }
 
     async createCandidato(){
         let candidadoDAO = new CandidatoDAO()
