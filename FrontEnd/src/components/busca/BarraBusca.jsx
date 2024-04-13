@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { Container, Form } from 'react-bootstrap';
-import './barraBusca.css';
 export default function BarraBusca({ placeHolder,
     dados,
     campoChave,

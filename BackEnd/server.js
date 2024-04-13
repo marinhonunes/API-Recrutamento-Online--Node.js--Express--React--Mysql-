@@ -1,5 +1,5 @@
 import express from 'express';
-//import cors from 'cors';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import candidatoRoutes from './routes/candidatoRoutes.js';
 import rotavaga from './routes/vagaRoutes.js'
@@ -9,7 +9,7 @@ const porta = 3001;
 
 app.use(express.json());
 
-//app.use(cors({origin: "http://localhost:3000", credentials: true}));
+app.use(cors({origin: "http://localhost:3000", credentials: true}));
 
 dotenv.config();
 
