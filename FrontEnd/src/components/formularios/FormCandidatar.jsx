@@ -21,7 +21,7 @@ export default function FormCandidatar(props) {
   });
 
   useEffect(() => {
-    fetch("http://localhost:3001/candidatos", { method: "GET" })
+    fetch("http://localhost:3001/candidato", { method: "GET" })
       .then((resposta) => {
         return resposta.json();
       })
@@ -46,8 +46,8 @@ export default function FormCandidatar(props) {
     //descrever o formato esperado pelo backend do candidato
     const itensInscricao = ordem.itens.map((item) => ({
       candidato: { codigo: item.codigo },
-      descricaoOs: item.descricao,
-      precoUnitario: parseFloat(item.preco),
+      // descricaoOs: item.descricao,
+      // precoUnitario: parseFloat(item.preco),
     }));
 
     const dataOrdemFormatada = new Date(ordem.dataOrdem).toLocaleDateString(
@@ -64,7 +64,7 @@ export default function FormCandidatar(props) {
     };
 
     // Enviar o objeto para o backend
-    fetch("http://localhost:3001/ordem", {
+    fetch("http://localhost:3001/inscricao", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export default function FormCandidatar(props) {
               name="dataOrdem"
               value={ordem.dataOrdem}
               onChange={manipularMudanca}
-              disabled
+             
             />
           </Col>
           <Col md={6}>
@@ -116,7 +116,7 @@ export default function FormCandidatar(props) {
               name="horarioOrdem"
               value={ordem.horarioOrdem}
               onChange={manipularMudanca}
-              disabled
+          
             />
           </Col>
         </Row>
@@ -137,9 +137,9 @@ export default function FormCandidatar(props) {
           <Col md={12}>
             <Form.Label>Selecione a Vaga:</Form.Label>
             <CaixaSelecao
-              enderecoFonteDados={"http://localhost:3001/vaga"}
+              enderecoFonteDados={"http://localhost:3001/vagas"}
               campoChave={"codigo"}
-              campoExibicao={"nome"}
+              campoExibicao={"cargo"}
               funcaoSelecao={setVagaSelecionada}
             />
           </Col>
