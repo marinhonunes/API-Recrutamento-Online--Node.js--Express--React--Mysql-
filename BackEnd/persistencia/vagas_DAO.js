@@ -13,8 +13,25 @@ export default class VagasDAO {
 
         //console.log(params)
         await conexao.executaComando(sql, params)
-
         return
+    }
+
+
+    async buscar(nome){
+        let buscar = nome
+        let conexao = new Databasee()
+
+        if(!nome){
+            buscar = ''
+        }
+
+        let sql = `SELECT * FROM vagas WHERE vaga_cidade LIKE ?`
+        let params = ['%' + buscar + '%']
+
+        let lista_candidatos = await conexao.executaComando(sql, params)
+        return lista_candidatos
 
     }
+
+
 }
