@@ -7,8 +7,6 @@ export default class CandidatoCTRL{
         let endereco = req.body.endereco
         let telefone = req.body.telefone
 
-        console.log(cpf)
-
         if(cpf && nome && endereco && telefone){
             let candidato = new Candidato(cpf,nome,endereco,telefone)
                 candidato.createCandidato()
