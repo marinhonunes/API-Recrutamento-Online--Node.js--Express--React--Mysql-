@@ -27,4 +27,25 @@ export default class VagaCTRL{
         }
 
     }
+
+
+
+    async buscar(req,res){
+        let buscar = req.body.nome
+            let vagas = new Vagas()
+                vagas.getAllvagas(buscar)
+                .then((lista)=>{
+                    res.status(200).json({
+                        "status": true,
+                            lista
+                    })
+                })
+                .catch((erro) => {
+                    res.status(500).json({
+                        "status": false,
+                        "mensagem": "Erro ao buscar candidatos:" + erro.message
+                    })
+                })
+            }
+
 }

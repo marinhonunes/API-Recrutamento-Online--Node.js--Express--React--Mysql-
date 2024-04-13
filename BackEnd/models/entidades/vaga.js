@@ -15,10 +15,10 @@ export default class Vagas {
         this.quantidadeVagas = quantidadeVagas;
     }
 
-    // async getAllVagas() {
-    //     const vagas = await banco.executaComando('SELECT * FROM vaga');
-    //     return vagas;
-    // }
+    async getAllvagas(nome){
+        let vagas = new VagasDAO()
+        return await vagas.buscar(nome)
+    }
 
     async createVaga() {
         let vagas = new VagasDAO()
