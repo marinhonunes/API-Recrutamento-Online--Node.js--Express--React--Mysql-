@@ -27,6 +27,7 @@ export default function FormCandidatar(props) {
       })
       .then((listaCandidatos) => {
         setListaCandidatos(listaCandidatos);
+        
       })
       .catch((erro) => {
         alert("Não foi possível recuperar os candidatos do backend.");
@@ -92,6 +93,7 @@ export default function FormCandidatar(props) {
     event.preventDefault();
     event.stopPropagation();
   };
+  
 
   return (
     <Form noValidate validated={validado} onSubmit={manipulaSubmissao}>
@@ -124,8 +126,8 @@ export default function FormCandidatar(props) {
           <Col md={12}>
             <Form.Label>Candidato:</Form.Label>
             <BarraBusca
-              campoBusca={"nome"}
-              campoChave={"cpf"}
+              campoBusca={"cand_nome"}
+              campoChave={"cand_cpf"}
               dados={listaCandidatos}
               funcaoSelecao={setCandidatoSelecionado}
               placeHolder={"Selecione um candidato"}
@@ -138,8 +140,8 @@ export default function FormCandidatar(props) {
             <Form.Label>Selecione a Vaga:</Form.Label>
             <CaixaSelecao
               enderecoFonteDados={"http://localhost:3001/vagas"}
-              campoChave={"codigo"}
-              campoExibicao={"cargo"}
+              campoChave={"codigo_vaga"}
+              campoExibicao={"vaga_cargo"}
               funcaoSelecao={setVagaSelecionada}
             />
           </Col>
@@ -152,7 +154,7 @@ export default function FormCandidatar(props) {
                   <Form.Label>ID:</Form.Label>
                   <Form.Control
                     type="text"
-                    value={vagaSelecionada?.codigo}
+                    value={vagaSelecionada?.codigo_vaga}
                     disabled
                   />
                 </Form.Group>
@@ -163,7 +165,7 @@ export default function FormCandidatar(props) {
                   <Form.Control 
                   type="text" 
                   id="cargo"
-                  value={vagaSelecionada?.cargo}
+                  value={vagaSelecionada?.vaga_cargo}
                   disabled />
                 </Form.Group>
               </Col>
@@ -173,7 +175,7 @@ export default function FormCandidatar(props) {
                   <Form.Control 
                   type="text" 
                   id="valorR"
-                  value={vagaSelecionada?.salario}
+                  value={vagaSelecionada?.vaga_salario}
                   disabled />
                 </Form.Group>
               </Col>
@@ -183,7 +185,7 @@ export default function FormCandidatar(props) {
                   <Form.Control 
                   type="text" 
                   id="cidade"
-                  value={vagaSelecionada?.cidade} 
+                  value={vagaSelecionada?.vaga_cidade} 
                   disabled />
                 </Form.Group>
               </Col>
@@ -193,7 +195,7 @@ export default function FormCandidatar(props) {
                   <Form.Control 
                   type="text" 
                   id="quantidade"
-                  value={vagaSelecionada?.quantidadeVagas}
+                  value={vagaSelecionada?.vaga_quantidade}
                   disabled />
                 </Form.Group>
               </Col>
@@ -202,20 +204,20 @@ export default function FormCandidatar(props) {
                 <Form.Group>
                   <Form.Label>Adicionar</Form.Label>
                   <Button
-                  // onClick={() => {
-                  //   setinscricao({
-                  //     ...inscricao,
-                  //     itens: [
-                  //       ...inscricao.itens,
-                  //       {
-                  //       codigo: vagaSelecionada?.codigo,
-                  //       descricao:
-                  //       document.getElementById("descricaoDoServico").value,
-                  //       preco: document.getElementById("valorR").value,
-                  //       },
-                  //     ],
-                  //   });
-                  // }}
+                  onClick={() => {
+                    setinscricao({
+                      ...inscricao,
+                      itens: [
+                        ...inscricao.itens,
+                        {
+                        codigo: vagaSelecionada?.codigo_vaga,
+                        descricao:
+                        document.getElementById("descricaoDoServico").value,
+                        preco: document.getElementById("valorR").value,
+                        },
+                      ],
+                    });
+                  }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
