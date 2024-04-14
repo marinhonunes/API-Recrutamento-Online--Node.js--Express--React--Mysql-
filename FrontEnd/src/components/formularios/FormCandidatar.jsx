@@ -10,7 +10,6 @@ export default function FormCandidatar(props) {
   const [inscricao, setInscricao] = useState({
     data_inscricao: "",
     horario_inscricao: "",
-    cand_id: 0,
     vaga_id: [],
   });
 
@@ -28,29 +27,27 @@ export default function FormCandidatar(props) {
       .catch(() => alert("Não foi possível recuperar as vagas do backend."));
   }, []);
 
-  useEffect(() => {
-    if (candidatoSelecionado.codigo) {
-      setInscricao((prevInscricao) => ({
-        ...prevInscricao,
-        cliente: { codigo: candidatoSelecionado.codigo },
-      }));
-    }
-  }, [candidatoSelecionado]);
-
   function manipularMudanca(e) {
-    const { name, value, checked, type } = e.target;
-    const newValue = type === "checkbox" ? checked : value;
-    setInscricao({ ...inscricao, [name]: newValue });
+    const { name, value } = e.target;
+    if (name === "candidatoSelecionado") {
+      const candidatoId = parseInt(value);
+      const selectedCandidato = listaCandidatos.find(
+        (candidato) => candidato.id === candidatoId
+      );
+      console.log("Candidato selecionado:", selectedCandidato);
+      setCandidatoSelecionado(selectedCandidato || {});
+    } else {
+      setInscricao({ ...inscricao, [name]: value });
+    }
   }
 
   function gravar() {
     const novaInscricao = {
-      cand_id: inscricao.cand_id,
       data_inscricao: inscricao.data_inscricao,
       horario_inscricao: inscricao.horario_inscricao,
-      vaga_id: inscricao.vaga_id.map((vaga) => vaga.codigo_vaga),
+      cand_id: candidatoSelecionado.id, // Obtendo o ID do candidato selecionado
+      vaga_id: inscricao.vaga_id.map((vaga) => ({ codigo: vaga.codigo_vaga })),
     };
-  
     // Enviar os dados para o backend via POST
     fetch("http://localhost:3001/inscricoes", {
       method: "POST",
@@ -67,7 +64,10 @@ export default function FormCandidatar(props) {
         alert(dados.mensagem);
       })
       .catch((erro) => alert(erro.message));
+  
+    console.log(novaInscricao);
   }
+  
   
   const adicionarVaga = () => {
     if (vagaSelecionada.codigo_vaga) {
@@ -102,6 +102,8 @@ export default function FormCandidatar(props) {
     event.stopPropagation();
   };
 
+
+
   return (
     <Form noValidate validated={validado} onSubmit={manipulaSubmissao}>
       <Container className="m-4 border">
@@ -111,8 +113,8 @@ export default function FormCandidatar(props) {
             <Form.Control
               type="date"
               required
-              name="datainscricao"
-              value={inscricao.datainscricao}
+              name="data_inscricao"
+              value={inscricao.data_inscricao}
               onChange={manipularMudanca}
               // disabled
             />
@@ -122,8 +124,8 @@ export default function FormCandidatar(props) {
             <Form.Control
               type="time"
               required
-              name="horarioinscricao"
-              value={inscricao.horarioinscricao}
+              name="horario_inscricao"
+              value={inscricao.horario_inscricao}
               onChange={manipularMudanca}
               // disabled
             />
@@ -265,8 +267,8 @@ export default function FormCandidatar(props) {
                 </tr>
               </thead>
               <tbody>
-                {inscricao.vaga_id.map((vaga) => (
-                  <tr key={vaga.codigo}>
+              {inscricao.vaga_id && inscricao.vaga_id.map((vaga) => (
+                  <tr key={vaga.codigo_vaga}>
                     <td>{vaga.cargo}</td>
                     <td>{vaga.cidade}</td>
                     <td>{vaga.salario}</td>
@@ -275,7 +277,7 @@ export default function FormCandidatar(props) {
                       <Button
                         onClick={() => {
                           const novosItens = inscricao.vaga_id.filter(
-                            (i) => i.codigo !== vaga.codigo
+                            (i) => i.codigo_vaga !== vaga.codigo_vaga
                           );
                           setInscricao({ ...inscricao, vaga_id: novosItens });
                         }}
