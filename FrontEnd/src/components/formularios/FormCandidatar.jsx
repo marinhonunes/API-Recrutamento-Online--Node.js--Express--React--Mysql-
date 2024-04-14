@@ -7,6 +7,7 @@ import TabelaVagas from "../tabela/TabelaVagas.jsx";
 export default function FormCandidatar(props) {
   const [validado, setValidado] = useState(false);
   const [listaCandidatos, setListaCandidatos] = useState([]);
+  const [listavagas, setlistavagas] = useState([]);
   const [candidatoSelecionado, setCandidatoSelecionado] = useState({});
   const [vagaSelecionada, setVagaSelecionada] = useState({});
 
@@ -26,13 +27,34 @@ export default function FormCandidatar(props) {
         return resposta.json();
       })
       .then((listaCandidatos) => {
-        setListaCandidatos(listaCandidatos);
+        //console.log(listaCandidatos.lista)
+        setListaCandidatos(listaCandidatos.lista);
         
       })
       .catch((erro) => {
         alert("Não foi possível recuperar os candidatos do backend.");
       });
+
+
+      // Fetch de vagas
+
+      fetch("http://localhost:3001/vagas", { method: "GET" })
+      .then((resposta) => {
+        return resposta.json();
+      })
+      .then((listavagas) => {
+        //console.log(listavagas.lista)
+        setlistavagas(listavagas.lista)
+      })
+      .catch((erro) => {
+        alert("Não foi possível recuperar os candidatos do backend.");
+      });
+
+      
+
   }, []);
+
+  
 
   function manipularMudanca(e) {
     const alvo = e.target.name;
@@ -125,25 +147,53 @@ export default function FormCandidatar(props) {
         <Row>
           <Col md={12}>
             <Form.Label>Candidato:</Form.Label>
-            <BarraBusca
+            {/* <BarraBusca
               campoBusca={"cand_nome"}
               campoChave={"cand_cpf"}
               dados={listaCandidatos}
               funcaoSelecao={setCandidatoSelecionado}
               placeHolder={"Selecione um candidato"}
               valor={""}
-            />
+            /> */}
+
+            <select name="" id="">
+
+            <option value=""></option>
+              
+            {
+              listaCandidatos.map((candidato)=>(
+                <option value={candidato.id}>{candidato.cand_nome}</option>
+            ))
+            
+            }
+            </select>
+
           </Col>
         </Row>
         <Row>
           <Col md={12}>
             <Form.Label>Selecione a Vaga:</Form.Label>
-            <CaixaSelecao
+            {/* <CaixaSelecao
               enderecoFonteDados={"http://localhost:3001/vagas"}
               campoChave={"codigo_vaga"}
               campoExibicao={"vaga_cargo"}
               funcaoSelecao={setVagaSelecionada}
-            />
+            /> */}
+
+            <select name="" id="candidatos">
+
+              <option value=""></option>
+              
+            {
+              listavagas.map((vaga)=>(
+                <option value={vaga.codigo_vaga}>{vaga.vaga_cargo}</option>
+            ))
+            
+            }
+            </select>
+
+
+
           </Col>
         </Row>
         <Row>

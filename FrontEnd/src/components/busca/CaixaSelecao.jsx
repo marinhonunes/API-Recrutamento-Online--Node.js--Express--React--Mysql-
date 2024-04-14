@@ -19,6 +19,7 @@ export default function CaixaSelecao({
         try {
             setCarregandoDados(true);
             fetch(enderecoFonteDados, { method: "GET" }).then((resposta) => {
+                console.log(resposta)
                 if (resposta.ok) {  
                     return resposta.json();
                 }
@@ -31,6 +32,7 @@ export default function CaixaSelecao({
                 }
             }).then((listaDados) => {
                 setCarregandoDados(false);
+                //console.log(listaDados)
                 setDados(listaDados.listaFuncionarios);
                 if (listaDados.length > 0){
                    setValorSelecionado(listaDados[0]);

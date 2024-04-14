@@ -17,6 +17,8 @@ export default class VagaCTRL{
                         "mensagem": "Vaga cadastrada com sucesso!"
                     })
                 })
+
+                
                 .catch((erro) => {
                     res.status(500).json({
                         "status": false,
