@@ -8,13 +8,10 @@ export default function FormCandidatar(props) {
   const [candidatoSelecionado, setCandidatoSelecionado] = useState({});
   const [vagaSelecionada, setVagaSelecionada] = useState({});
   const [inscricao, setInscricao] = useState({
-    id: 0,
-    datainscricao: "",
-    total: 0,
-    cliente: {
-      codigo: 0, // Inicializando com 0 por enquanto
-    },
-    itens: [],
+    data_inscricao: "",
+    horario_inscricao: "",
+    cand_id: 0,
+    vaga_id: [],
   });
 
   useEffect(() => {
@@ -32,11 +29,10 @@ export default function FormCandidatar(props) {
   }, []);
 
   useEffect(() => {
-    // Verifica se há um candidato selecionado e inicializa a inscrição com o código do cliente
     if (candidatoSelecionado.codigo) {
       setInscricao((prevInscricao) => ({
         ...prevInscricao,
-        cliente: { codigo: candidatoSelecionado.codigo }
+        cliente: { codigo: candidatoSelecionado.codigo },
       }));
     }
   }, [candidatoSelecionado]);
@@ -48,25 +44,14 @@ export default function FormCandidatar(props) {
   }
 
   function gravar() {
-    const itensInscricao = inscricao.itens.map((item) => ({
-      candidato: { codigo: item.codigo },
-      descricaoOs: item.descricao,
-      precoUnitario: parseFloat(item.preco),
-    }));
-
-    const datainscricaoFormatada = new Date(
-      inscricao.datainscricao
-    ).toLocaleDateString("en-GB");
-
     const novaInscricao = {
-      cliente: candidatoSelecionado
-        ? { codigo: candidatoSelecionado.codigo }
-        : null,
-      datainscricao: datainscricaoFormatada,
-      total: parseFloat(inscricao.total),
-      itensInscricao: itensInscricao,
+      cand_id: inscricao.cand_id,
+      data_inscricao: inscricao.data_inscricao,
+      horario_inscricao: inscricao.horario_inscricao,
+      vaga_id: inscricao.vaga_id.map((vaga) => vaga.codigo_vaga),
     };
-
+  
+    // Enviar os dados para o backend via POST
     fetch("http://localhost:3001/inscricoes", {
       method: "POST",
       headers: {
@@ -83,24 +68,27 @@ export default function FormCandidatar(props) {
       })
       .catch((erro) => alert(erro.message));
   }
-
+  
   const adicionarVaga = () => {
     if (vagaSelecionada.codigo_vaga) {
-      const novoItem = {
-        codigo: vagaSelecionada.codigo_vaga,
-        cargo: vagaSelecionada.vaga_cargo,
-        cidade: vagaSelecionada.vaga_cidade,
-        salario: vagaSelecionada.vaga_salario,
-        quantidadeVagas: vagaSelecionada.vaga_quantidade,
-      };
       setInscricao((prevInscricao) => ({
         ...prevInscricao,
-        itens: [...prevInscricao.itens, novoItem],
+        vaga_id: [
+          ...prevInscricao.vaga_id,
+          {
+            codigo_vaga: vagaSelecionada.codigo_vaga,
+            cargo: vagaSelecionada.vaga_cargo,
+            cidade: vagaSelecionada.vaga_cidade,
+            salario: vagaSelecionada.vaga_salario,
+            quantidadeVagas: vagaSelecionada.vaga_quantidade,
+          },
+        ],
       }));
     } else {
       alert("Por favor, selecione uma vaga antes de adicionar.");
     }
   };
+  
 
   const manipulaSubmissao = (event) => {
     const form = event.currentTarget;
@@ -277,7 +265,7 @@ export default function FormCandidatar(props) {
                 </tr>
               </thead>
               <tbody>
-                {inscricao.itens.map((vaga) => (
+                {inscricao.vaga_id.map((vaga) => (
                   <tr key={vaga.codigo}>
                     <td>{vaga.cargo}</td>
                     <td>{vaga.cidade}</td>
@@ -286,10 +274,10 @@ export default function FormCandidatar(props) {
                     <td>
                       <Button
                         onClick={() => {
-                          const novosItens = inscricao.itens.filter(
+                          const novosItens = inscricao.vaga_id.filter(
                             (i) => i.codigo !== vaga.codigo
                           );
-                          setInscricao({ ...inscricao, itens: novosItens });
+                          setInscricao({ ...inscricao, vaga_id: novosItens });
                         }}
                       >
                         Remover
