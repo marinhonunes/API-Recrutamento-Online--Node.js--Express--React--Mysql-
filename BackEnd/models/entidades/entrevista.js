@@ -5,7 +5,7 @@ export default class Candidato_vaga{
     data_inscricao;
     horario_inscricao;
     cand_id;
-    vaga_id;
+    vaga_id = []
 
     constructor(data_inscricao, horario_inscricao, cand_id, vaga_id) {
  
@@ -28,11 +28,4 @@ export default class Candidato_vaga{
         
     }
 
-    // async updateVaga(codigoVaga, dadosVaga) {
-    //     await banco.executaComandoNonQuery('UPDATE vaga SET ? WHERE codigoVaga = ?', [dadosVaga, codigoVaga]);
-    // }
-
-    // async deleteVaga(codigoVaga) {
-    //     await banco.executaComandoNonQuery('DELETE FROM vaga WHERE codigoVaga = ?', [codigoVaga]);
-    // }
 }
