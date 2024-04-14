@@ -16,15 +16,16 @@ export default class Candidato_vaga{
 
     }
 
-    // async getAllVagas() {
-    //     const vagas = await banco.executaComando('SELECT * FROM vaga');
-    //     return vagas;
-    // }
+    async getAllVagas() {
+        let candidato_vaga = new Candidado_vagaDAO()
+        return await candidato_vaga.buscar()
+        
+    }
 
     async createCandidato_vaga() {
         let candidato_vaga = new Candidado_vagaDAO()
-        await candidato_vaga.gravar(this)
-        return
+        return await candidato_vaga.gravar(this)
+        
     }
 
     // async updateVaga(codigoVaga, dadosVaga) {
