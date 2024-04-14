@@ -1,108 +1,94 @@
 import { useState, useEffect } from "react";
-import { Form, Row, Col, Button, Container } from "react-bootstrap";
-import BarraBusca from "../busca/BarraBusca.jsx";
-import CaixaSelecao from "../busca/CaixaSelecao.jsx";
-import TabelaVagas from "../tabela/TabelaVagas.jsx";
+import { Form, Row, Col, Button, Container, Table } from "react-bootstrap";
 
 export default function FormCandidatar(props) {
   const [validado, setValidado] = useState(false);
   const [listaCandidatos, setListaCandidatos] = useState([]);
-  const [listavagas, setlistavagas] = useState([]);
+  const [listavagas, setListavagas] = useState([]);
   const [candidatoSelecionado, setCandidatoSelecionado] = useState({});
   const [vagaSelecionada, setVagaSelecionada] = useState({});
-
-  const [inscricao, setinscricao] = useState({
-    id: 0,
-    datainscricao: "",
-    total: 0,
-    cliente: {
-      codigo: candidatoSelecionado.codigo,
-    },
-    itens: [],
+  const [inscricao, setInscricao] = useState({
+    data_inscricao: "",
+    horario_inscricao: "",
+    cand_id: 0,
+    vaga_id: [],
   });
 
   useEffect(() => {
     fetch("http://localhost:3001/candidato", { method: "GET" })
-      .then((resposta) => {
-        return resposta.json();
-      })
-      .then((listaCandidatos) => {
-        //console.log(listaCandidatos.lista)
-        setListaCandidatos(listaCandidatos.lista);
-        
-      })
-      .catch((erro) => {
-        alert("Não foi possível recuperar os candidatos do backend.");
-      });
+      .then((resposta) => resposta.json())
+      .then((listaCandidatos) => setListaCandidatos(listaCandidatos.lista))
+      .catch(() =>
+        alert("Não foi possível recuperar os candidatos do backend.")
+      );
 
-
-      // Fetch de vagas
-
-      fetch("http://localhost:3001/vagas", { method: "GET" })
-      .then((resposta) => {
-        return resposta.json();
-      })
-      .then((listavagas) => {
-        //console.log(listavagas.lista)
-        setlistavagas(listavagas.lista)
-      })
-      .catch((erro) => {
-        alert("Não foi possível recuperar os candidatos do backend.");
-      });
-
-      
-
+    fetch("http://localhost:3001/vagas", { method: "GET" })
+      .then((resposta) => resposta.json())
+      .then((listavagas) => setListavagas(listavagas.lista))
+      .catch(() => alert("Não foi possível recuperar as vagas do backend."));
   }, []);
 
-  
+  useEffect(() => {
+    if (candidatoSelecionado.codigo) {
+      setInscricao((prevInscricao) => ({
+        ...prevInscricao,
+        cliente: { codigo: candidatoSelecionado.codigo },
+      }));
+    }
+  }, [candidatoSelecionado]);
 
   function manipularMudanca(e) {
-    const alvo = e.target.name;
-    if (e.target.type === "checkbox") {
-      setinscricao({ ...inscricao, [alvo]: e.target.checked });
-    } else {
-      setinscricao({ ...inscricao, [alvo]: e.target.value });
-    }
+    const { name, value, checked, type } = e.target;
+    const newValue = type === "checkbox" ? checked : value;
+    setInscricao({ ...inscricao, [name]: newValue });
   }
 
   function gravar() {
-    //descrever o formato esperado pelo backend do candidato
-    const itensInscricao = inscricao.itens.map((item) => ({
-      candidato: { codigo: item.codigo },
-      descricaoOs: item.descricao,
-      precoUnitario: parseFloat(item.preco),
-    }));
-
-    const datainscricaoFormatada = new Date(inscricao.datainscricao).toLocaleDateString(
-      "en-GB"
-    ); // Formatando a data para 'DD/MM/YYYY'
-
-    const Inscricao = {
-      cliente: candidatoSelecionado
-        ? { codigo: candidatoSelecionado.codigo }
-        : null,
-      datainscricao: datainscricaoFormatada,
-      total: parseFloat(inscricao.total),
-      itensInscricao: itensInscricao,
+    const novaInscricao = {
+      cand_id: inscricao.cand_id,
+      data_inscricao: inscricao.data_inscricao,
+      horario_inscricao: inscricao.horario_inscricao,
+      vaga_id: inscricao.vaga_id.map((vaga) => vaga.codigo_vaga),
     };
-
-    // Enviar o objeto para o backend
+  
+    // Enviar os dados para o backend via POST
     fetch("http://localhost:3001/inscricoes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(Inscricao),
+      body: JSON.stringify(novaInscricao),
     })
       .then((resposta) => resposta.json())
       .then((dados) => {
         if (dados.status) {
-          setinscricao({ ...inscricao, id: dados.codigo });
+          setInscricao({ ...inscricao, id: dados.codigo });
         }
         alert(dados.mensagem);
       })
       .catch((erro) => alert(erro.message));
   }
+  
+  const adicionarVaga = () => {
+    if (vagaSelecionada.codigo_vaga) {
+      setInscricao((prevInscricao) => ({
+        ...prevInscricao,
+        vaga_id: [
+          ...prevInscricao.vaga_id,
+          {
+            codigo_vaga: vagaSelecionada.codigo_vaga,
+            cargo: vagaSelecionada.vaga_cargo,
+            cidade: vagaSelecionada.vaga_cidade,
+            salario: vagaSelecionada.vaga_salario,
+            quantidadeVagas: vagaSelecionada.vaga_quantidade,
+          },
+        ],
+      }));
+    } else {
+      alert("Por favor, selecione uma vaga antes de adicionar.");
+    }
+  };
+  
 
   const manipulaSubmissao = (event) => {
     const form = event.currentTarget;
@@ -115,7 +101,6 @@ export default function FormCandidatar(props) {
     event.preventDefault();
     event.stopPropagation();
   };
-  
 
   return (
     <Form noValidate validated={validado} onSubmit={manipulaSubmissao}>
@@ -129,7 +114,7 @@ export default function FormCandidatar(props) {
               name="datainscricao"
               value={inscricao.datainscricao}
               onChange={manipularMudanca}
-              disabled
+              // disabled
             />
           </Col>
           <Col md={6}>
@@ -140,152 +125,128 @@ export default function FormCandidatar(props) {
               name="horarioinscricao"
               value={inscricao.horarioinscricao}
               onChange={manipularMudanca}
-              disabled
+              // disabled
             />
           </Col>
         </Row>
         <Row>
           <Col md={12}>
             <Form.Label>Candidato:</Form.Label>
-            {/* <BarraBusca
-              campoBusca={"cand_nome"}
-              campoChave={"cand_cpf"}
-              dados={listaCandidatos}
-              funcaoSelecao={setCandidatoSelecionado}
-              placeHolder={"Selecione um candidato"}
-              valor={""}
-            /> */}
-
-            <select name="" id="">
-
-            <option value=""></option>
-              
-            {
-              listaCandidatos.map((candidato)=>(
-                <option value={candidato.id}>{candidato.cand_nome}</option>
-            ))
-            
-            }
+            <select
+              name="candidatoSelecionado"
+              id="candidatoSelecionado"
+              onChange={(e) => {
+                const selectedCandidato = listaCandidatos.find(
+                  (candidato) => candidato.id === parseInt(e.target.value)
+                );
+                setCandidatoSelecionado(selectedCandidato || {});
+              }}
+            >
+              <option value=""></option>
+              {listaCandidatos.map((candidato) => (
+                <option key={candidato.id} value={candidato.id}>
+                  {candidato.cand_nome}
+                </option>
+              ))}
             </select>
-
           </Col>
         </Row>
         <Row>
           <Col md={12}>
             <Form.Label>Selecione a Vaga:</Form.Label>
-            {/* <CaixaSelecao
-              enderecoFonteDados={"http://localhost:3001/vagas"}
-              campoChave={"codigo_vaga"}
-              campoExibicao={"vaga_cargo"}
-              funcaoSelecao={setVagaSelecionada}
-            /> */}
-
-            <select name="" id="candidatos">
-
+            <select
+              name="vagaSelecionada"
+              id="vagaSelecionada"
+              onChange={(e) => {
+                const selectedVaga = listavagas.find(
+                  (vaga) => vaga.codigo_vaga === parseInt(e.target.value)
+                );
+                setVagaSelecionada(selectedVaga || {});
+              }}
+            >
               <option value=""></option>
-              
-            {
-              listavagas.map((vaga)=>(
-                <option value={vaga.codigo_vaga}>{vaga.vaga_cargo}</option>
-            ))
-            
-            }
+              {listavagas.map((vaga) => (
+                <option key={vaga.codigo_vaga} value={vaga.codigo_vaga}>
+                  {vaga.vaga_cargo}
+                </option>
+              ))}
             </select>
-
-
-
           </Col>
         </Row>
         <Row>
-          <Col md={12}>
-            <Row>
-              <Col md={1}>
-                <Form.Group>
-                  <Form.Label>ID:</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={vagaSelecionada?.codigo_vaga}
-                    disabled
+          <Col md={1}>
+            <Form.Group>
+              <Form.Label>ID:</Form.Label>
+              <Form.Control
+                type="text"
+                value={vagaSelecionada?.codigo_vaga || ""}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2}>
+            <Form.Group>
+              <Form.Label>Cargo:</Form.Label>
+              <Form.Control
+                type="text"
+                id="cargo"
+                value={vagaSelecionada?.vaga_cargo || ""}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2}>
+            <Form.Group>
+              <Form.Label>Salário R$:</Form.Label>
+              <Form.Control
+                type="text"
+                id="valorR"
+                value={vagaSelecionada?.vaga_salario || ""}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2}>
+            <Form.Group>
+              <Form.Label>Cidade:</Form.Label>
+              <Form.Control
+                type="text"
+                id="cidade"
+                value={vagaSelecionada?.vaga_cidade || ""}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2}>
+            <Form.Group>
+              <Form.Label>Quantidade de Vagas:</Form.Label>
+              <Form.Control
+                type="text"
+                id="quantidade"
+                value={vagaSelecionada?.vaga_quantidade || ""}
+                disabled
+              />
+            </Form.Group>
+          </Col>
+          <Col md={1} className="middle">
+            <Form.Group>
+              <Form.Label>Adicionar</Form.Label>
+              <Button onClick={adicionarVaga}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  className="bi bi-bag-plus-fill"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z"
                   />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Cargo:</Form.Label>
-                  <Form.Control 
-                  type="text" 
-                  id="cargo"
-                  value={vagaSelecionada?.vaga_cargo}
-                  disabled />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Salário R$:</Form.Label>
-                  <Form.Control 
-                  type="text" 
-                  id="valorR"
-                  value={vagaSelecionada?.vaga_salario}
-                  disabled />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Cidade:</Form.Label>
-                  <Form.Control 
-                  type="text" 
-                  id="cidade"
-                  value={vagaSelecionada?.vaga_cidade} 
-                  disabled />
-                </Form.Group>
-              </Col>
-              <Col md={2}>
-                <Form.Group>
-                  <Form.Label>Quantidade de Vagas:</Form.Label>
-                  <Form.Control 
-                  type="text" 
-                  id="quantidade"
-                  value={vagaSelecionada?.vaga_quantidade}
-                  disabled />
-                </Form.Group>
-              </Col>
-
-              <Col md={1} className="middle">
-                <Form.Group>
-                  <Form.Label>Adicionar</Form.Label>
-                  <Button
-                  onClick={() => {
-                    setinscricao({
-                      ...inscricao,
-                      itens: [
-                        ...inscricao.itens,
-                        {
-                        codigo: vagaSelecionada?.codigo_vaga,
-                        descricao:
-                        document.getElementById("descricaoDoServico").value,
-                        preco: document.getElementById("valorR").value,
-                        },
-                      ],
-                    });
-                  }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="currentColor"
-                      className="bi bi-bag-plus-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z"
-                      />
-                    </svg>
-                  </Button>
-                </Form.Group>
-              </Col>
-            </Row>
+                </svg>
+              </Button>
+            </Form.Group>
           </Col>
         </Row>
         <Row className="mt-3">
@@ -293,11 +254,39 @@ export default function FormCandidatar(props) {
             <p>
               <strong>Vagas Selecionadas</strong>
             </p>
-            <TabelaVagas
-              listaItens={inscricao.itens}
-              setinscricao={setinscricao}
-              dadosinscricao={inscricao}
-            />
+            <Table>
+              <thead>
+                <tr>
+                  <th>Cargo</th>
+                  <th>Cidade</th>
+                  <th>Salário</th>
+                  <th>Quantidade de Vagas</th>
+                  <th>Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inscricao.vaga_id.map((vaga) => (
+                  <tr key={vaga.codigo}>
+                    <td>{vaga.cargo}</td>
+                    <td>{vaga.cidade}</td>
+                    <td>{vaga.salario}</td>
+                    <td>{vaga.quantidadeVagas}</td>
+                    <td>
+                      <Button
+                        onClick={() => {
+                          const novosItens = inscricao.vaga_id.filter(
+                            (i) => i.codigo !== vaga.codigo
+                          );
+                          setInscricao({ ...inscricao, vaga_id: novosItens });
+                        }}
+                      >
+                        Remover
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Col>
         </Row>
         <Button type="submit" variant="primary">
