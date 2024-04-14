@@ -8,6 +8,7 @@ export default class Canditato_vagaCTRL{
         let cand_id             = req.body.cand_id
         let vaga_id             = req.body.vaga_id
 
+        //console.log(vaga_id)
 
         if(data_inscricao && horario_inscricao && cand_id && vaga_id){
             let cand_vaga = new Candidato_vaga(data_inscricao,horario_inscricao,cand_id,vaga_id)
@@ -26,6 +27,34 @@ export default class Canditato_vagaCTRL{
                 })
 
         }
-
     }
+
+
+    async buscar(req,res){
+
+        let buscar = req.params
+
+        if(!buscar){
+            buscar = ''
+        }
+        
+            let cand_vaga = new Candidato_vaga()
+                cand_vaga.getAllVagas(buscar)
+                .then((lista)=>{
+                    res.status(200).json({
+                        "status": true,
+                        lista
+                    })
+                })
+                .catch((erro) => {
+                    res.status(500).json({
+                        "status": false,
+                        "mensagem": "Erro ao registrar inscrição:" + erro.message
+                    })
+                })
+    }
+
+
+
+
 }

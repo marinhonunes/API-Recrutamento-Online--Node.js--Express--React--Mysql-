@@ -5,7 +5,7 @@ export default class Candidato_vaga{
     data_inscricao;
     horario_inscricao;
     cand_id;
-    vaga_id;
+    vaga_id = []
 
     constructor(data_inscricao, horario_inscricao, cand_id, vaga_id) {
  
@@ -16,22 +16,16 @@ export default class Candidato_vaga{
 
     }
 
-    // async getAllVagas() {
-    //     const vagas = await banco.executaComando('SELECT * FROM vaga');
-    //     return vagas;
-    // }
+    async getAllVagas() {
+        let candidato_vaga = new Candidado_vagaDAO()
+        return await candidato_vaga.buscar()
+        
+    }
 
     async createCandidato_vaga() {
         let candidato_vaga = new Candidado_vagaDAO()
-        await candidato_vaga.gravar(this)
-        return
+        return await candidato_vaga.gravar(this)
+        
     }
 
-    // async updateVaga(codigoVaga, dadosVaga) {
-    //     await banco.executaComandoNonQuery('UPDATE vaga SET ? WHERE codigoVaga = ?', [dadosVaga, codigoVaga]);
-    // }
-
-    // async deleteVaga(codigoVaga) {
-    //     await banco.executaComandoNonQuery('DELETE FROM vaga WHERE codigoVaga = ?', [codigoVaga]);
-    // }
 }
