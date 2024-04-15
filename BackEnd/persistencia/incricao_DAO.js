@@ -7,7 +7,6 @@ export default class Candidado_vagaDAO{
         let conexao = new Databasee()
 
         for( let id of candidato_vaga.vaga_id){
-            //console.log(id.codigo)
 
             let sql = "INSERT INTO candidados_vagas (data_inscricao, horarios_inscricao, cand_id, vaga_id ) VALUES (?,?,?,?)"
             let params = [candidato_vaga.data_inscricao, candidato_vaga.horario_inscricao, candidato_vaga.cand_id,id.codigo ]
@@ -17,14 +16,6 @@ export default class Candidado_vagaDAO{
         }
      
         return
-
-         //let sql = "INSERT INTO candidados_vagas (data_inscricao, horarios_inscricao, cand_id, vaga_id ) VALUES (?,?,?,?)"
-         //let params = [candidato_vaga.data_inscricao, candidato_vaga.horario_inscricao, candidato_vaga.cand_id, candidato_vaga.vaga_id]
-
-        // //console.log(params)
-        
-        // await conexao.executaComando(sql, params)
-        // return
     }
 
 

@@ -14,6 +14,9 @@ export default function FormCandidatar(props) {
   });
 
   useEffect(() => {
+
+    
+
     fetch("http://localhost:3001/candidato", { method: "GET" })
       .then((resposta) => resposta.json())
       .then((listaCandidatos) => setListaCandidatos(listaCandidatos.lista))
@@ -68,8 +71,23 @@ export default function FormCandidatar(props) {
     console.log(novaInscricao);
   }
   
+
   
   const adicionarVaga = () => {
+
+    console.log(inscricao)
+
+    // Paulo
+    for(let i = 0; i < inscricao.vaga_id.length; i++){
+      if(inscricao.vaga_id[i].codigo_vaga === vagaSelecionada.codigo_vaga){
+          alert('Usuário já se inscreveu nessa vaga')
+          return
+      }
+
+    }
+
+
+
     if (vagaSelecionada.codigo_vaga) {
       setInscricao((prevInscricao) => ({
         ...prevInscricao,
@@ -84,6 +102,10 @@ export default function FormCandidatar(props) {
           },
         ],
       }));
+
+
+      
+
     } else {
       alert("Por favor, selecione uma vaga antes de adicionar.");
     }
@@ -101,7 +123,6 @@ export default function FormCandidatar(props) {
     event.preventDefault();
     event.stopPropagation();
   };
-
 
 
   return (

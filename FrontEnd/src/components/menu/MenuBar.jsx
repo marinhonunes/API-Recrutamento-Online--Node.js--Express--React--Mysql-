@@ -11,6 +11,7 @@ function MenuBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/home">Home</Nav.Link>
+            <Nav.Link href="/lista">Lista de inscrições</Nav.Link>
             <Nav.Link href="/candidato">Candidatos</Nav.Link>
             <Nav.Link href="/vaga">Vagas</Nav.Link>
             <Nav.Link href="/inscricoes">Inscrições</Nav.Link>
